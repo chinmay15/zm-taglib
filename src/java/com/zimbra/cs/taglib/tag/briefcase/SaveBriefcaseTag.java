@@ -27,11 +27,9 @@ import javax.servlet.jsp.JspContext;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.JspTagException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
+import java.util.Map;
 
 public class SaveBriefcaseTag extends ZimbraSimpleTag {
 
@@ -66,8 +64,9 @@ public class SaveBriefcaseTag extends ZimbraSimpleTag {
                 try {
                     for (FileItem item : mFileItems) {
                         if (item.getSize() > 0 ) {
-                            Part part = new FilePart(item.getFieldName(), new ZMessageComposeBean.UploadPartSource(item), item.getContentType(), "utf-8");
-                            String attachmentUploadId = mbox.uploadAttachments(new Part[] { part }, 1000 * 60);
+                        	Map<String,byte[]> attachment = new HashMap<String,byte[]>();
+                        	attachment.put(item.getName(),item.get());
+                            String attachmentUploadId = mbox.uploadAttachments(attachment, 1000 * 60);
                             briefIds[i++] = mbox.createDocument(mFolderId, item.getName(), attachmentUploadId);
                         }
                     }

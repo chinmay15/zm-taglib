@@ -23,9 +23,6 @@ import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.*;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.PartSource;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspTagException;
@@ -177,13 +174,13 @@ public class ZFileUploaderBean {
     
     public String getUploadId(ZMailbox mailbox) throws ServiceException {
         if (!mFiles.isEmpty()) {
-            Part[] parts = new Part[mFiles.size()];
+            Map<String,byte[]> attachments = new HashMap<String,byte[]>();
             int i=0;
             for (FileItem item : mFiles) {
-                parts[i++] = new FilePart(item.getFieldName(), new UploadPartSource(item), item.getContentType(), "utf-8");
+            	 attachments.put(item.getName(),item.get());
             }
             try {
-                return mailbox.uploadAttachments(parts, 1000*60); //TODO get timeout from config
+                return mailbox.uploadAttachments(attachments, 1000*60); //TODO get timeout from config
             } finally {
                 for (FileItem item : mFiles) {
                     try { item.delete(); } catch (Exception e) { /* TODO: need logging infra */ }
@@ -191,24 +188,5 @@ public class ZFileUploaderBean {
             }
         }
         return null;
-    }
-
-    public static class UploadPartSource implements PartSource {
-
-        private FileItem mItem;
-
-        public UploadPartSource(FileItem item) { mItem = item; }
-
-        public long getLength() {
-            return mItem.getSize();
-        }
-
-        public String getFileName() {
-            return mItem.getName();
-        }
-
-        public InputStream createInputStream() throws IOException {
-            return mItem.getInputStream();
-        }
     }
 }
