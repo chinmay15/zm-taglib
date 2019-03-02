@@ -1093,6 +1093,14 @@
         </attribute>
         <attribute>
             <description>
+                Face ID
+            </description>
+            <name>authPic</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>
                 TOTP code or one time scratch code
             </description>
             <name>twoFactorCode</name>

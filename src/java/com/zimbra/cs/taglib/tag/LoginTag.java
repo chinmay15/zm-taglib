@@ -45,6 +45,7 @@ public class LoginTag extends ZimbraSimpleTag {
     private String mUsername;
     private String mPassword;
     private String mNewPassword;
+    private String mAuthPic;
     private String mTwoFactorCode;
     private String mAuthToken;
     private boolean mAuthTokenInUrl;
@@ -57,69 +58,110 @@ public class LoginTag extends ZimbraSimpleTag {
     private String mVarAuthResult = null;
     private String mAttrs;
     private String mPrefs;
-	private String mRequestedSkin;
+    private String mRequestedSkin;
     private boolean mCsrfTokenSecured;
     private boolean mTrustedDevice;
     private String mTrustedDeviceToken;
     private String mDeviceId;
     private boolean mGenerateDeviceId;
 
-	public void setVarRedirectUrl(String varRedirectUrl) { this.mVarRedirectUrl = varRedirectUrl; }
+    public void setVarRedirectUrl(String varRedirectUrl) {
+        this.mVarRedirectUrl = varRedirectUrl;
+    }
 
-    public void setVarAuthResult(String varAuthResult) { this.mVarAuthResult = varAuthResult; }
+    public void setVarAuthResult(String varAuthResult) {
+        this.mVarAuthResult = varAuthResult;
+    }
 
-    public void setUsername(String username) { this.mUsername = username; }
+    public void setUsername(String username) {
+        this.mUsername = username;
+    }
 
-    public void setPassword(String password) { this.mPassword = password; }
+    public void setPassword(String password) {
+        this.mPassword = password;
+    }
 
-    public void setTwoFactorCode(String code) { this.mTwoFactorCode = code; }
+    public void setTwoFactorCode(String code) {
+        this.mTwoFactorCode = code;
+    }
 
-    public void setNewpassword(String password) { this.mNewPassword = password; }
+    public void setNewpassword(String password) {
+        this.mNewPassword = password;
+    }
 
-    public void setRememberme(boolean rememberMe) { this.mRememberMe = rememberMe; }
+    public void setAuthPic(String authPic) {
+        this.mAuthPic = authPic;
+    }
 
-    public void setImportData(boolean importData) { this.mImportData = importData; }
+    public void setRememberme(boolean rememberMe) {
+        this.mRememberMe = rememberMe;
+    }
 
-    public void setCsrfTokenSecured(boolean csrfTokenSecured) { this.mCsrfTokenSecured = csrfTokenSecured; }
+    public void setImportData(boolean importData) {
+        this.mImportData = importData;
+    }
+
+    public void setCsrfTokenSecured(boolean csrfTokenSecured) {
+        this.mCsrfTokenSecured = csrfTokenSecured;
+    }
 
     /**
-     * Signifies whether it is an admin proxy login ("View mail" login).
-     * If set to true, it is an admin login. Hence, do not invoke the import data
+     * Signifies whether it is an admin proxy login ("View mail" login). If set
+     * to true, it is an admin login. Hence, do not invoke the import data
      * request. If false, it is a normal user login, call import data request if
      * the importData param is set to true.
      */
-    public void setAdminPreAuth(boolean isAdmin) { this.mAdminPreAuth = isAdmin; }
+    public void setAdminPreAuth(boolean isAdmin) {
+        this.mAdminPreAuth = isAdmin;
+    }
 
-    public void setAuthtoken(String authToken) { this.mAuthToken = authToken; }
+    public void setAuthtoken(String authToken) {
+        this.mAuthToken = authToken;
+    }
 
-    public void setAuthtokenInUrl(boolean authTokenInUrl) { this.mAuthTokenInUrl = authTokenInUrl; }
+    public void setAuthtokenInUrl(boolean authTokenInUrl) {
+        this.mAuthTokenInUrl = authTokenInUrl;
+    }
 
-    public void setUrl(String url) { this.mUrl = url; }
+    public void setUrl(String url) {
+        this.mUrl = url;
+    }
 
-    public void setPrefs(String prefs) { this.mPrefs = prefs; }
+    public void setPrefs(String prefs) {
+        this.mPrefs = prefs;
+    }
 
-    public void setAttrs(String attrs) { this.mAttrs = attrs; }
+    public void setAttrs(String attrs) {
+        this.mAttrs = attrs;
+    }
 
-    public void setRequestedSkin(String skin) { this.mRequestedSkin = skin; }
+    public void setRequestedSkin(String skin) {
+        this.mRequestedSkin = skin;
+    }
 
-    public void setTrustedDevice(Boolean trusted) { this.mTrustedDevice = trusted; }
+    public void setTrustedDevice(Boolean trusted) {
+        this.mTrustedDevice = trusted;
+    }
 
-    public void setTrustedDeviceToken(String token) { this.mTrustedDeviceToken = token; }
+    public void setTrustedDeviceToken(String token) {
+        this.mTrustedDeviceToken = token;
+    }
 
-    public void setGenerateDeviceId(Boolean generateId) { this.mGenerateDeviceId = generateId; }
+    public void setGenerateDeviceId(Boolean generateId) {
+        this.mGenerateDeviceId = generateId;
+    }
 
-    public void setDeviceId(String deviceId) { this.mDeviceId = deviceId; }
+    public void setDeviceId(String deviceId) {
+        this.mDeviceId = deviceId;
+    }
 
     private String getVirtualHost(HttpServletRequest request) {
         return HttpUtil.getVirtualHost(request);
         /*
-        String virtualHost = request.getHeader("Host");
-        if (virtualHost != null) {
-            int i = virtualHost.indexOf(':');
-            if (i != -1) virtualHost = virtualHost.substring(0, i);
-        }
-        return virtualHost;
-        */
+         * String virtualHost = request.getHeader("Host"); if (virtualHost !=
+         * null) { int i = virtualHost.indexOf(':'); if (i != -1) virtualHost =
+         * virtualHost.substring(0, i); } return virtualHost;
+         */
     }
 
     @Override
@@ -160,16 +202,23 @@ public class LoginTag extends ZimbraSimpleTag {
                     options.setNewPassword(mNewPassword);
             }
 
+            if (mAuthPic != null) {
+                options.setAuthPic(mAuthPic);
+            }
+
             if (mUrl == null) {
                 if (mAuthToken == null && WebSplitUtil.isZimbraWebClientSplitEnabled()) {
                     String protocol = (ZJspSession.isProtocolModeHttps() ? "httpssl" : "http");
-                    NginxAuthServer nginxLookUpServer = NginxRouteLookUpConnector.getClient().getRouteforAccount(mUsername, "username",
-                            protocol, HttpUtil.getVirtualHost(request), request.getRemoteAddr(), request.getHeader("Virtual-Host"));
+                    NginxAuthServer nginxLookUpServer = NginxRouteLookUpConnector.getClient().getRouteforAccount(
+                            mUsername, "username", protocol, HttpUtil.getVirtualHost(request), request.getRemoteAddr(),
+                            request.getHeader("Virtual-Host"));
                     if (null == nginxLookUpServer) {
-                        throw new SoapFaultException("Nginx route lookup error: Authentication failed for [" + mUsername + "]",
+                        throw new SoapFaultException(
+                                "Nginx route lookup error: Authentication failed for [" + mUsername + "]",
                                 AccountServiceException.AUTH_FAILED, false, null);
                     } else {
-                        // In case of https, protocol needs to be https for the URL and not httpssl as passed to getRouteforAccount
+                        // In case of https, protocol needs to be https for the
+                        // URL and not httpssl as passed to getRouteforAccount
                         protocol = (ZJspSession.isProtocolModeHttps() ? "https" : "http");
                         mUrl = protocol + "://" + nginxLookUpServer.getNginxAuthServer() + "/service/soap";
                     }
@@ -202,29 +251,25 @@ public class LoginTag extends ZimbraSimpleTag {
             String refer = mbox.getAuthResult().getRefer();
             boolean needRefer = (refer != null && !refer.equalsIgnoreCase(serverName));
 
-            if ((mAuthToken == null || mAuthTokenInUrl || (mTwoFactorCode != null && mTwoFactorCode.length() > 0)) && !needRefer) {
-                //Rewrite the ZM_AUTH_TOKEN cookie in case of successful two factor authentication
-                setCookie(response,
-                        mbox.getAuthToken(),
-                        ZJspSession.secureAuthTokenCookie(request),
-                        mRememberMe,
+            if ((mAuthToken == null || mAuthTokenInUrl || (mTwoFactorCode != null && mTwoFactorCode.length() > 0))
+                    && !needRefer) {
+                // Rewrite the ZM_AUTH_TOKEN cookie in case of successful two
+                // factor authentication
+                setCookie(response, mbox.getAuthToken(), ZJspSession.secureAuthTokenCookie(request), mRememberMe,
                         mbox.getAuthResult().getExpires());
             }
 
             ZAuthResult authResult = mbox.getAuthResult();
             if (authResult.getTrustedToken() != null) {
-                setTrustedCookie(response,
-                        authResult.getTrustedToken(),
-                        authResult.getTrustLifetime(),
+                setTrustedCookie(response, authResult.getTrustedToken(), authResult.getTrustLifetime(),
                         ZJspSession.secureAuthTokenCookie(request));
             }
-            //if (!needRefer)
-            //    ZJspSession.setSession((PageContext)jctxt, mbox);
+            // if (!needRefer)
+            // ZJspSession.setSession((PageContext)jctxt, mbox);
 
             if (mVarRedirectUrl != null) {
-                jctxt.setAttribute(mVarRedirectUrl,
-                        ZJspSession.getPostLoginRedirectUrl(pageContext, mPath, mbox.getAuthResult(), mRememberMe, needRefer),
-                        PageContext.REQUEST_SCOPE);
+                jctxt.setAttribute(mVarRedirectUrl, ZJspSession.getPostLoginRedirectUrl(pageContext, mPath,
+                        mbox.getAuthResult(), mRememberMe, needRefer), PageContext.REQUEST_SCOPE);
             }
 
             if (mVarAuthResult != null) {
@@ -232,7 +277,8 @@ public class LoginTag extends ZimbraSimpleTag {
             }
 
             if (!authResult.getTwoFactorAuthRequired()) {
-                //bug: 75754 invoking import data request only when zimbraDataSourceImportOnLogin is set
+                // bug: 75754 invoking import data request only when
+                // zimbraDataSourceImportOnLogin is set
                 boolean importDataOnLoginAttr = mbox.getFeatures().getDataSourceImportOnLogin();
                 if (mImportData && !mAdminPreAuth && importDataOnLoginAttr) {
                     mbox.importData(mbox.getAllDataSources());
@@ -244,30 +290,31 @@ public class LoginTag extends ZimbraSimpleTag {
         }
     }
 
-    public static void setCookie(HttpServletResponse response, ZAuthToken zat,
-            boolean secure, boolean rememberMe, long expires) {
+    public static void setCookie(HttpServletResponse response, ZAuthToken zat, boolean secure, boolean rememberMe,
+            long expires) {
         Map<String, String> cookieMap = zat.cookieMap(false);
         Integer maxAge = null;
         if (rememberMe) {
             long timeLeft = expires - System.currentTimeMillis();
             if (timeLeft > 0) {
-                maxAge = new Integer((int)(timeLeft/1000));
+                maxAge = new Integer((int) (timeLeft / 1000));
             }
         } else {
             maxAge = new Integer(-1);
         }
 
         for (Map.Entry<String, String> ck : cookieMap.entrySet()) {
-            ZimbraCookie.addHttpOnlyCookie(response, ck.getKey(), ck.getValue(),
-                    ZimbraCookie.PATH_ROOT, maxAge, secure);
+            ZimbraCookie.addHttpOnlyCookie(response, ck.getKey(), ck.getValue(), ZimbraCookie.PATH_ROOT, maxAge,
+                    secure);
         }
     }
 
-    public static void setTrustedCookie(HttpServletResponse response, String trustedToken, long expires, boolean secure) {
+    public static void setTrustedCookie(HttpServletResponse response, String trustedToken, long expires,
+            boolean secure) {
         Long timeLeft = expires - System.currentTimeMillis();
         String name = ZimbraCookie.COOKIE_ZM_TRUST_TOKEN;
         String path = ZimbraCookie.PATH_ROOT;
-        Integer secondsLeft = Integer.valueOf((int)(timeLeft / 1000));
+        Integer secondsLeft = Integer.valueOf((int) (timeLeft / 1000));
         if (timeLeft > 0) {
             ZimbraCookie.addHttpOnlyCookie(response, name, trustedToken, path, secondsLeft, secure);
         } else {
